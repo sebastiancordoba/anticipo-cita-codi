@@ -1,0 +1,41 @@
+:root {
+  --fondo: #f6f5f1; --tarjeta: #ffffff; --texto: #1d2321; --suave: #5f6b66; --borde: #dfe3df;
+  --verde: #1f7a55; --verde-claro: #e3f3ea; --ambar: #a86a00; --ambar-claro: #fbf0d9;
+  --rojo: #b3261e; --rojo-claro: #fbe4e2; --gris-claro: #eef0ee;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fondo: #121614; --tarjeta: #1b201e; --texto: #e9eeeb; --suave: #9aa6a0; --borde: #2c3330;
+    --verde: #4cc08b; --verde-claro: #183a2b; --ambar: #e5aa3a; --ambar-claro: #3a2e14;
+    --rojo: #f08a82; --rojo-claro: #3d1d1b; --gris-claro: #252b28;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--fondo); color: var(--texto); font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; margin: 0 0 4px; }
+h2 { font-size: 1.1rem; margin: 24px 0 8px; }
+.suave { color: var(--suave); }
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 16px; }
+.dia { margin-top: 12px; }
+.horarios { display: flex; flex-wrap: wrap; gap: 8px; }
+button, .boton { font: inherit; border-radius: 8px; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); padding: 8px 12px; cursor: pointer; }
+button:disabled { opacity: .4; cursor: not-allowed; text-decoration: line-through; }
+button.elegido { border-color: var(--verde); background: var(--verde-claro); }
+button.primario { background: var(--verde); color: #fff; border-color: var(--verde); }
+input { font: inherit; width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--borde); background: var(--tarjeta); color: var(--texto); }
+label { display: block; margin-top: 12px; font-size: .9rem; color: var(--suave); }
+.error { color: var(--rojo); margin-top: 8px; }
+.qr { width: 240px; max-width: 100%; margin: 12px auto; background: #fff; padding: 8px; border-radius: 8px; }
+.centro { text-align: center; }
+.chip { display: inline-block; font-size: .8rem; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
+.chip.confirmada { background: var(--verde-claro); color: var(--verde); }
+.chip.apartada { background: var(--ambar-claro); color: var(--ambar); }
+.chip.expirada { background: var(--gris-claro); color: var(--suave); }
+.chip.pago_tardio { background: var(--rojo-claro); color: var(--rojo); }
+table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--borde); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.kpi b { display: block; font-size: 1.6rem; }
+.aviso { font-size: .85rem; background: var(--ambar-claro); color: var(--ambar); padding: 6px 10px; border-radius: 8px; display: inline-block; }
+.tabla-scroll { overflow-x: auto; }
