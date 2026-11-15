@@ -2,6 +2,16 @@
 
 Proyecto para el Cursor Hackatón México 2026 (pey + CoDi). Un consultorio **ficticio** ("Consultorio Roble") abre su agenda; el paciente elige horario, se le aparta unos minutos y paga un anticipo con **CoDi** escaneando un QR generado con el API de [pey](https://docs.pey.mx). Cuando pey avisa del pago (webhook firmado), el servidor lo **verifica con pey** y la cita pasa sola de *esperando anticipo* a *confirmada*, en la pantalla del paciente y en la agenda del consultorio.
 
+## Capturas
+
+| Paciente (móvil) | Pago CoDi | Confirmación |
+|---|---|---|
+| ![Elegir día y hora](docs/capturas/m1-dia-hora.png) | ![QR con cuenta regresiva](docs/capturas/m3-pago.png) | ![Cita confirmada](docs/capturas/m4-confirmada.png) |
+
+Agenda del consultorio (escritorio):
+
+![Agenda del consultorio](docs/capturas/d3-consultorio.png)
+
 ## Flujo
 
 1. `POST /api/citas` aparta el horario y llama a `POST https://api.pey.mx/codi/qr` (monto, concepto, `numRef`, vigencia ≥ 6 min).
@@ -27,4 +37,4 @@ Variables: `PEY_MODE=real`, `PEY_API_KEY`, `PEY_WEBHOOK_SECRET`, `ANTICIPO_MXN`.
 
 ## Componentes previos
 
-Ninguno: todo el código se escribió durante el hackatón (desde el 14-nov-2026). Dependencias: Next.js, React y `qrcode`.
+Ninguno: todo el código se escribió durante el hackatón (desde el 14-nov-2026). Dependencias: Next.js, React, Tailwind CSS, lucide-react y `qrcode`.

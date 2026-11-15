@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { conDb, horariosDisponibles, ocupa } from "@/lib/store";
-import { config } from "@/lib/config";
+import { CONSULTORIO, config } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -9,5 +9,5 @@ export async function GET() {
     const tomados = new Set(db.citas.filter(ocupa).map((c) => c.horario));
     return horariosDisponibles().map((h) => ({ horario: h, libre: !tomados.has(h) }));
   });
-  return NextResponse.json({ horarios: res, anticipo: config.anticipoMXN, modo: config.modo });
+  return NextResponse.json({ horarios: res, anticipo: config.anticipoMXN, modo: config.modo, consultorio: CONSULTORIO, minutosApartado: config.minutosApartado });
 }

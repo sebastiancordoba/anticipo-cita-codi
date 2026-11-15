@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const citas = await conDb((db) => ({ citas: [...db.citas].reverse(), eventos: db.eventos.slice(-15).reverse() }));
-  return NextResponse.json({ ...citas, modo: config.modo });
+  return NextResponse.json({ ...citas, modo: config.modo, consultorio: CONSULTORIO });
 }
 
 export async function POST(req: Request) {

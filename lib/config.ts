@@ -1,6 +1,8 @@
 export const CONSULTORIO = {
   nombre: "Consultorio Roble",
+  medica: "Dra. Elena Ríos",
   especialidad: "Medicina general",
+  duracionMin: 30,
   direccion: "Calle Ficticia 123, Ciudad de México",
 };
 

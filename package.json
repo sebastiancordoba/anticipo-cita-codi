@@ -10,10 +10,13 @@
     "prueba": "node scripts/prueba-flujo.mjs"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "4.1.18",
+    "lucide-react": "0.553.0",
     "next": "15.5.29",
     "qrcode": "1.5.4",
     "react": "19.1.10",
-    "react-dom": "19.1.10"
+    "react-dom": "19.1.10",
+    "tailwindcss": "4.1.18"
   },
   "devDependencies": {
     "@types/node": "22.20.5",

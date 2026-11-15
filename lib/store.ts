@@ -103,20 +103,20 @@ function vencerApartadas(db: Db) {
   }
 }
 
-/** Horarios del consultorio: los próximos 3 días hábiles, de 9 a 14 h cada 30 min (hora CDMX). */
+/** Horarios del consultorio: los próximos 5 días con lugares (lun–sáb), de 9 a 14 h cada 30 min (hora CDMX). */
 export function horariosDisponibles(): string[] {
   const res: string[] = [];
   const hoyCdmx = new Date(Date.now() - 6 * 3600_000); // CDMX es UTC−6 todo el año
   let dias = 0;
-  for (let d = 0; dias < 3 && d < 10; d++) {
+  for (let d = 0; dias < 5 && d < 14; d++) {
     const dia = new Date(Date.UTC(hoyCdmx.getUTCFullYear(), hoyCdmx.getUTCMonth(), hoyCdmx.getUTCDate() + d));
-    const dow = dia.getUTCDay();
-    if (dow === 0) continue; // domingo cerrado
-    dias++;
+    if (dia.getUTCDay() === 0) continue; // domingo cerrado
+    let alguno = false;
     for (let m = 9 * 60; m < 14 * 60; m += 30) {
       const inicio = new Date(dia.getTime() + (m + 6 * 60) * 60_000); // a UTC
-      if (inicio.getTime() > Date.now() + 30 * 60_000) res.push(inicio.toISOString());
+      if (inicio.getTime() > Date.now() + 30 * 60_000) { res.push(inicio.toISOString()); alguno = true; }
     }
+    if (alguno) dias++;
   }
   return res;
 }
