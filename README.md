@@ -4,21 +4,24 @@ Proyecto para el Cursor Hackatón México 2026 (pey + CoDi). Un consultorio **fi
 
 ## Capturas
 
-| Paciente (móvil) | Pago CoDi | Confirmación |
+| Reservar (móvil) | Pago CoDi al celular | Confirmación |
 |---|---|---|
-| ![Elegir día y hora](docs/capturas/m1-dia-hora.png) | ![QR con cuenta regresiva](docs/capturas/m3-pago.png) | ![Cita confirmada](docs/capturas/m4-confirmada.png) |
+| ![Elegir día y hora](docs/capturas/m-reservar.png) | ![Cobro al celular](docs/capturas/m-pago-enviado.png) | ![Cita confirmada](docs/capturas/m-confirmada.png) |
 
-Agenda del consultorio (escritorio):
+Agenda del consultorio (escritorio): siguiente cita, pagos por vencer, métricas, acciones por fila y actividad.
 
-![Agenda del consultorio](docs/capturas/d3-consultorio.png)
+![Agenda del consultorio](docs/capturas/d-consultorio.png)
+
+![Detalle de una cita](docs/capturas/d-detalle.png)
 
 ## Flujo
 
 1. `POST /api/citas` aparta el horario y llama a `POST https://api.pey.mx/codi/qr` (monto, concepto, `numRef`, vigencia ≥ 6 min).
-2. El paciente escanea el QR con la app de su banco.
-3. pey manda `codi.qr.payment_received` a `/api/webhooks/pey`; se valida la firma (Standard Webhooks) y se confirma con `GET /transaction/codi/qr/{id}` que el pago está `PAID`.
+2. El paciente paga escaneando el QR o, desde el celular, pidiendo el cobro directo a su app bancaria (`POST /codi/pn`).
+3. pey manda `codi.qr.payment_received` o `codi.pn.payment_received` a `/api/webhooks/pey`; se valida la firma (Standard Webhooks) y se confirma con `GET /transaction/...` que el pago está `PAID`.
 4. La cita queda **confirmada**. El mismo `transactionId` nunca se procesa dos veces.
-5. Si el pago llega tarde: si el horario sigue libre, se confirma; si ya lo tomó otro paciente, queda como **pago tardío: devolver**.
+5. Si el pago llega tarde: si el horario sigue libre, se confirma; si ya lo tomó otro paciente, queda **por devolver**. Igual con un pago duplicado o una cita pagada que se cancela.
+6. El consultorio ve la agenda en vivo (lista o calendario), recuerda por WhatsApp, cobra al celular, marca asistencia, cancela y registra devoluciones.
 
 ## Correr en local
 

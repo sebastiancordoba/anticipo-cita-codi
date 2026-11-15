@@ -10,16 +10,18 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (config.modo !== "simulado") return NextResponse.json({ error: "solo en modo simulado" }, { status: 403 });
   const { id } = await params;
   const cita = await conDb((db) => db.citas.find((c) => c.id === id) ?? null);
-  if (!cita?.codiQrId) return NextResponse.json({ error: "No existe" }, { status: 404 });
-  const repetir = new URL(req.url).searchParams.get("tx");
+  if (!cita?.codiQrId && !cita?.pnTransactionId) return NextResponse.json({ error: "No existe" }, { status: 404 });
+  const q = new URL(req.url).searchParams;
+  const repetir = q.get("tx");
+  const pn = q.get("metodo") === "celular" && cita.pnTransactionId;
   const cuerpo = JSON.stringify({
-    type: "codi.qr.payment_received",
+    type: pn ? "codi.pn.payment_received" : "codi.qr.payment_received",
     amount: cita.monto,
     codiQrId: cita.codiQrId,
     concept: "Anticipo",
     datePaid: Math.floor(Date.now() / 1000),
     numRef: cita.numRef,
-    transactionId: repetir ?? "SIMTX" + Date.now().toString(36).toUpperCase(),
+    transactionId: pn ? cita.pnTransactionId : repetir ?? "SIMTX" + Date.now().toString(36).toUpperCase(),
   });
   const wid = "msg_" + Date.now();
   const ts = String(Math.floor(Date.now() / 1000));

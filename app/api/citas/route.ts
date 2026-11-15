@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import { CONSULTORIO, config } from "@/lib/config";
+import { HORA_FIN, HORA_INICIO } from "@/lib/store";
 import { crearQr } from "@/lib/pey";
-import { conDb, horariosDisponibles, nuevaCita, ocupa } from "@/lib/store";
+import { conDb, evento, horariosDisponibles, nuevaCita, ocupa } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const citas = await conDb((db) => ({ citas: [...db.citas].reverse(), eventos: db.eventos.slice(-15).reverse() }));
-  return NextResponse.json({ ...citas, modo: config.modo, consultorio: CONSULTORIO });
+  const citas = await conDb((db) => ({ citas: [...db.citas].reverse(), eventos: db.eventos.slice(-200).reverse() }));
+  return NextResponse.json({ ...citas, modo: config.modo, consultorio: CONSULTORIO, horas: [HORA_INICIO, HORA_FIN], horarios: horariosDisponibles(), ahora: Date.now() });
 }
 
 export async function POST(req: Request) {
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
   const cita = await conDb((db) => {
     if (db.citas.some((c) => c.horario === b.horario && ocupa(c))) return null;
     const c = nuevaCita(db, { horario: b.horario!, paciente, telefono });
-    db.eventos.push(`${new Date().toISOString()} cita ${c.id} apartada, esperando anticipo`);
+    evento(db, c, "apartada");
     return c;
   });
   if (!cita) return NextResponse.json({ error: "Ese horario se acaba de ocupar" }, { status: 409 });
@@ -47,7 +48,7 @@ export async function POST(req: Request) {
     await conDb((db) => {
       const c = db.citas.find((x) => x.id === cita.id)!;
       c.estado = "expirada";
-      db.eventos.push(`${new Date().toISOString()} cita ${c.id}: falló crear el QR, horario liberado`);
+      evento(db, c, "error_cobro");
     });
     console.error(e);
     return NextResponse.json({ error: "No se pudo crear el cobro CoDi" }, { status: 502 });

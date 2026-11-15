@@ -57,3 +57,36 @@ export async function pagosDelQr(codiQrId: string): Promise<Transaccion[]> {
   const r = await llamar<{ items: Transaccion[] }>(`/transaction/codi/qr/${encodeURIComponent(codiQrId)}`);
   return r.items ?? [];
 }
+
+/** POST /codi/pn — manda la solicitud de cobro directo a la app del banco del paciente (sin escanear nada). */
+export async function cobrarAlCelular(p: {
+  monto: number;
+  telefono: string;
+  concepto: string;
+  numRef: string;
+  expiracionSeg: number;
+  metadata: Record<string, string>;
+}): Promise<{ transactionId: string; codiId?: string }> {
+  if (config.modo === "simulado") return { transactionId: "SIMPN" + Date.now().toString(36).toUpperCase() };
+  return llamar("/codi/pn", {
+    method: "POST",
+    body: JSON.stringify({
+      amount: p.monto,
+      phoneNumber: p.telefono,
+      concept: p.concepto,
+      numRef: p.numRef,
+      expiration: Math.max(360, p.expiracionSeg),
+      metadata: p.metadata,
+    }),
+  });
+}
+
+/** GET /transaction/{id} — estado de un cobro enviado al celular. */
+export async function transaccion(id: string): Promise<Transaccion | null> {
+  if (config.modo === "simulado") return null;
+  try {
+    return await llamar<Transaccion>(`/transaction/${encodeURIComponent(id)}`);
+  } catch {
+    return null;
+  }
+}
