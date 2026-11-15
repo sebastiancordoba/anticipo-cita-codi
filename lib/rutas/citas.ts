@@ -4,7 +4,6 @@ import { HORA_FIN, HORA_INICIO } from "@/lib/store";
 import { crearQr } from "@/lib/pey";
 import { conDb, evento, horariosDisponibles, nuevaCita, ocupa } from "@/lib/store";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const citas = await conDb((db) => ({ citas: [...db.citas].reverse(), eventos: db.eventos.slice(-200).reverse() }));

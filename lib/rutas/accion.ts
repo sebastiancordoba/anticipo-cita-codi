@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { ejecutar, type Accion } from "@/lib/acciones";
 
-export const dynamic = "force-dynamic";
 
 const DEL_PACIENTE: Accion[] = ["cobro_celular", "renovar_qr", "cancelar"];
 

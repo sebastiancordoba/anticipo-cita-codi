@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { config } from "@/lib/config";
 import { conDb } from "@/lib/store";
 import { firmar } from "@/lib/webhook";
+import { POST as webhookPey } from "./webhook";
 
-export const dynamic = "force-dynamic";
 
 // Solo en modo simulado: arma el mismo webhook que mandaría pey, lo firma y lo envía a nuestro endpoint.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +25,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   });
   const wid = "msg_" + Date.now();
   const ts = String(Math.floor(Date.now() / 1000));
-  const r = await fetch(new URL("/api/webhooks/pey", process.env.ORIGEN_INTERNO ?? req.url), {
+  // Se llama al manejador del webhook dentro del mismo proceso (misma instancia y mismo almacén), con la misma firma.
+  const r = await webhookPey(new Request(new URL("/api/webhooks/pey", req.url), {
     method: "POST",
     headers: {
       "content-type": "application/json",
@@ -34,6 +35,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
       "webhook-signature": firmar(config.webhookSecret, wid, ts, cuerpo),
     },
     body: cuerpo,
-  });
+  }));
   return NextResponse.json({ enviado: JSON.parse(cuerpo), respuesta: await r.json() }, { status: r.status });
 }

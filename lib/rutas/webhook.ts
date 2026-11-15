@@ -3,7 +3,6 @@ import { config } from "@/lib/config";
 import { aplicarPago, type EventoPago } from "@/lib/pagos";
 import { verificar } from "@/lib/webhook";
 
-export const dynamic = "force-dynamic";
 
 // pey avisa aquí cuando llega un pago (Standard Webhooks). Hay que registrar esta URL en
 // portal.mipey.mx → Desarrollador → engrane de la API key → "Crear Webhook".

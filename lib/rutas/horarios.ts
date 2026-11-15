@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { conDb, horariosDisponibles, ocupa } from "@/lib/store";
 import { CONSULTORIO, config } from "@/lib/config";
 
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   const res = await conDb((db) => {
