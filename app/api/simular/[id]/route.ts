@@ -25,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   });
   const wid = "msg_" + Date.now();
   const ts = String(Math.floor(Date.now() / 1000));
-  const r = await fetch(new URL("/api/webhooks/pey", req.url), {
+  const r = await fetch(new URL("/api/webhooks/pey", process.env.ORIGEN_INTERNO ?? req.url), {
     method: "POST",
     headers: {
       "content-type": "application/json",

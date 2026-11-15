@@ -4,7 +4,7 @@ import {
   AlertCircle, ArrowLeft, BellRing, CalendarPlus, Check, ChevronLeft, ChevronRight, Clock, Download, Globe, MapPin, Navigation,
   QrCode, RefreshCw, ShieldCheck, Smartphone, Stethoscope,
 } from "lucide-react";
-import { claveDia, etiquetaDia, fmtDia, fmtDiaCorto, fmtHora, fmtMonto, fmtTel, googleCal, ics, reloj, type Estado } from "./formato";
+import { B, claveDia, etiquetaDia, fmtDia, fmtDiaCorto, fmtHora, fmtMonto, fmtTel, googleCal, ics, reloj, type Estado } from "./formato";
 import { Boton, Esqueleto, Insignia, Spinner, Tarjeta, cx } from "./ui";
 
 type Horario = { horario: string; libre: boolean };
@@ -29,7 +29,7 @@ export default function Paciente() {
   const cargar = useCallback(async () => {
     setErrorCarga(false);
     try {
-      const r = await fetch("/api/horarios", { cache: "no-store" });
+      const r = await fetch(B + "/api/horarios", { cache: "no-store" });
       if (!r.ok) throw new Error();
       const d = (await r.json()) as Info;
       setInfo(d);
@@ -45,8 +45,8 @@ export default function Paciente() {
     cargar();
     const id = new URLSearchParams(location.search).get("cita");
     if (id)
-      fetch(`/api/citas/${id}`).then(async (r) => {
-        if (!r.ok) return history.replaceState(null, "", "/");
+      fetch(`${B}/api/citas/${id}`).then(async (r) => {
+        if (!r.ok) return history.replaceState(null, "", B + "/");
         const d = await r.json();
         setCita(d.cita);
         setQrSvg(d.qrSvg);
@@ -64,7 +64,7 @@ export default function Paciente() {
     setCita(null);
     setQrSvg(null);
     setHora(null);
-    history.replaceState(null, "", "/");
+    history.replaceState(null, "", B + "/");
     cargar();
     window.scrollTo({ top: 0 });
   };
@@ -91,7 +91,7 @@ function Barra({ consultorio, modo }: { consultorio?: Consultorio; modo?: string
   return (
     <header className="sticky top-0 z-20 border-b border-borde/70 bg-fondo/85 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:px-6">
-        <a href="/" className="flex items-center gap-2.5">
+        <a href={B + "/"} className="flex items-center gap-2.5">
           <span className="grid size-8 place-items-center rounded-lg bg-acento text-white"><Stethoscope className="size-4" /></span>
           <span className="text-[15px] font-semibold tracking-tight">{consultorio?.nombre ?? "Consultorio Roble"}</span>
         </a>
@@ -303,14 +303,14 @@ function Datos({ hora, info, onVolver, onApartada, onOcupado }: {
     setEnviando(true);
     setError("");
     try {
-      const r = await fetch("/api/citas", {
+      const r = await fetch(B + "/api/citas", {
         method: "POST", headers: { "content-type": "application/json" },
         body: JSON.stringify({ horario: hora, paciente: nombre.trim(), telefono: digitos }),
       });
       const d = await r.json();
       if (r.status === 409) { setError("Alguien acaba de tomar ese horario. Elige otro."); setTimeout(onOcupado, 1500); return; }
       if (!r.ok) throw new Error(d.error);
-      const det = await fetch(`/api/citas/${d.cita.id}`).then((x) => x.json());
+      const det = await fetch(`${B}/api/citas/${d.cita.id}`).then((x) => x.json());
       onApartada(det.cita, det.qrSvg, digitos);
     } catch (err) {
       setError((err as Error).message || "No pudimos generar el cobro. Inténtalo de nuevo.");
@@ -396,7 +396,7 @@ function Pago({ cita, qrSvg, info, telefono, onCita, onQr, onReiniciar }: {
   useEffect(() => { if (matchMedia("(pointer: coarse)").matches) setMetodo("celular"); }, []);
 
   const refrescar = useCallback(async () => {
-    const r = await fetch(`/api/citas/${cita.id}`, { cache: "no-store" }).catch(() => null);
+    const r = await fetch(`${B}/api/citas/${cita.id}`, { cache: "no-store" }).catch(() => null);
     if (!r?.ok) return;
     const d = await r.json();
     onCita(d.cita);
@@ -411,7 +411,7 @@ function Pago({ cita, qrSvg, info, telefono, onCita, onQr, onReiniciar }: {
   }, [cita.estado, refrescar]);
 
   const accion = async (a: string) =>
-    fetch(`/api/citas/${cita.id}/accion`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ accion: a, quien: "paciente" }) });
+    fetch(`${B}/api/citas/${cita.id}/accion`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ accion: a, quien: "paciente" }) });
 
   async function cobrarCelular() {
     setEnviando(true);
@@ -423,7 +423,7 @@ function Pago({ cita, qrSvg, info, telefono, onCita, onQr, onReiniciar }: {
   }
   async function simular() {
     setSimulando(true);
-    await fetch(`/api/simular/${cita.id}?metodo=${metodo === "celular" && cita.pnEnviado ? "celular" : "qr"}`, { method: "POST" });
+    await fetch(`${B}/api/simular/${cita.id}?metodo=${metodo === "celular" && cita.pnEnviado ? "celular" : "qr"}`, { method: "POST" });
     await refrescar();
     setSimulando(false);
   }

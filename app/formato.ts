@@ -94,3 +94,6 @@ export function googleCal(p: { inicio: string; minutos: number; titulo: string; 
   const q = new URLSearchParams({ action: "TEMPLATE", text: p.titulo, dates: `${f(ini)}/${f(fin)}`, location: p.lugar, details: p.detalle });
   return `https://calendar.google.com/calendar/render?${q}`;
 }
+
+/** Prefijo cuando la app vive bajo una ruta (p. ej. /anticipo detrás de un proxy). */
+export const B = process.env.NEXT_PUBLIC_BASE ?? "";

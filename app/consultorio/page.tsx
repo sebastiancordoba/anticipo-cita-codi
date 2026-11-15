@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import {
   ESTADOS, claveDia, cuandoFue, etiquetaDia, falta, fmtDia, fmtHora, fmtMonto, fmtTel, horaDe, reloj, type Estado,
+  B,
 } from "../formato";
 import { Avatar, Avisos, Esqueleto, Hoja, Insignia, Kbd, Menu, OpcionMenu, Tarjeta, cx, useAviso } from "../ui";
 
@@ -47,7 +48,7 @@ function Consultorio() {
 
   const cargar = useCallback(async () => {
     try {
-      const r = await fetch("/api/citas", { cache: "no-store" });
+      const r = await fetch(B + "/api/citas", { cache: "no-store" });
       if (!r.ok) throw new Error();
       const d = (await r.json()) as Datos;
       if (previo.current) {
@@ -76,7 +77,7 @@ function Consultorio() {
   }, [cargar]);
 
   const accion = useCallback(async (c: Cita, a: string, okTexto: string) => {
-    const r = await fetch(`/api/citas/${c.id}/accion`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ accion: a }) });
+    const r = await fetch(`${B}/api/citas/${c.id}/accion`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ accion: a }) });
     const d = await r.json().catch(() => ({}));
     avisar(r.ok ? okTexto : d.error ?? "No se pudo", r.ok ? "ok" : "error");
     cargar();
@@ -118,7 +119,7 @@ function Consultorio() {
               <Search className="size-4" /><span className="hidden flex-1 text-left sm:inline">Buscar…</span><span className="hidden sm:inline"><Kbd>⌘K</Kbd></span>
             </button>
             <Compartir />
-            <a href="/" target="_blank" className="hidden h-8 items-center gap-1.5 rounded-lg bg-tinta px-3 text-sm font-medium text-white transition hover:bg-tinta/90 sm:inline-flex">
+            <a href={B + "/"} target="_blank" className="hidden h-8 items-center gap-1.5 rounded-lg bg-tinta px-3 text-sm font-medium text-white transition hover:bg-tinta/90 sm:inline-flex">
               <Plus className="size-4" /> Nueva cita
             </a>
             <span className="ml-1 hidden items-center gap-1.5 text-xs text-tinta-3 lg:inline-flex" title={error ? "Sin conexión" : "Actualizando en vivo"}>
@@ -209,8 +210,8 @@ function Consultorio() {
             if (k === "lista") setVista("lista");
             if (k === "pendientes") setFiltro("apartada");
             if (k === "devolver") setFiltro("devolver");
-            if (k === "nueva") window.open("/", "_blank");
-            if (k === "copiar") navigator.clipboard?.writeText(location.origin + "/").then(() => avisar("Enlace de reserva copiado", "ok"));
+            if (k === "nueva") window.open(B + "/", "_blank");
+            if (k === "copiar") navigator.clipboard?.writeText(location.origin + B + "/").then(() => avisar("Enlace de reserva copiado", "ok"));
           }} />
       )}
     </div>
@@ -436,7 +437,7 @@ function Lista({ citas, ahora, resaltar, abrir, accion, consultorio }: { citas: 
 }
 
 function whatsapp(c: Cita, cons: Datos["consultorio"]) {
-  const base = typeof location !== "undefined" ? location.origin : "";
+  const base = typeof location !== "undefined" ? location.origin + B : "";
   const nombre = c.paciente.split(" ")[0];
   const cuando = `${etiquetaDia(c.horario).toLowerCase()} a las ${fmtHora(c.horario)}`;
   const texto = c.estado === "apartada" || c.estado === "expirada"
@@ -732,7 +733,7 @@ function Compartir() {
   const [svg, setSvg] = useState("");
   const [url, setUrl] = useState("");
   useEffect(() => {
-    const u = location.origin + "/";
+    const u = location.origin + B + "/";
     setUrl(u);
     QRCode.toString(u, { type: "svg", margin: 0 }).then(setSvg);
   }, []);
@@ -753,7 +754,7 @@ function Compartir() {
               <Copy className="size-3" />Copiar
             </button>
           </div>
-          <a href="/" target="_blank" className="mt-2 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium text-acento hover:bg-acento-suave"><ExternalLink className="size-3" />Abrir página de reserva</a>
+          <a href={B + "/"} target="_blank" className="mt-2 flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-medium text-acento hover:bg-acento-suave"><ExternalLink className="size-3" />Abrir página de reserva</a>
         </div>
       )}
     </Menu>
